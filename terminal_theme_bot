@@ -20,13 +20,22 @@ opt_0_3="✞ Combo!!!"
 opt_0_4="✞ adicionar / remover bk_img"
     opt_0_4_0="✞ adicionar bk_img"
     opt_0_4_1="✞ remover o bk_img"
+opt_0_5="✞ adicionar / remover bk_img (Do lixo)"
 
 #  ============ MENU OPTIONS ============
 OPTION=$(printf "$opt_0_0
 $opt_0_1
 $opt_0_2
 $opt_0_3
-$opt_0_4" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
+$opt_0_4
+$opt_0_5" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
+
+# ============= MENU HIDDEN OPTIONS =====
+
+OPT_LIXO='^LIXO$|^OCULTOS$|^155$|^CÓDIGO PENAL DE FURTO KKK$|^RESGATE$'
+
+
+
 
 case $OPTION in
 
@@ -39,19 +48,16 @@ case $OPTION in
         )
         apply_ps1 $PS1_DIR/$ps1    
     ;;
-    
     # 2
     "$opt_0_1")
         bk_img=$(ls $BG_IMG_DIR | fzf $FZF_BASE --prompt="✞ BACKGROUND OPTION ⤸")
         set_kitty_image "$BG_IMG_DIR/$bk_img"
     ;;
-
     # 3
     "$opt_0_2")
         reset_full
         echo "PS1 & Backround resetados"
     ;;
-
     # 4
     "$opt_0_3")
         ps1=$(ls "$PS1_DIR" | fzf \
@@ -85,7 +91,7 @@ case $OPTION in
                 remove_bk_img $bk_ch
             ;;
 
-            # Exception
+            # Exception for $bk_or_prompt
 
             *)
             printf '\e[31mOption not found\e[0m\n'
@@ -93,11 +99,18 @@ case $OPTION in
             ;;
 
         esac
-
     ;;
-
+    # LIXO CONTROLE INTERNO
+    "$opt_0_5")
+       opt_lixo=$(ls "$LIXO_BK" | fzf $FZF_BASE --prompt="✞ GARBAGE COLLECTION ⤸")
+       echo "$LIXO_BK/$opt_lixo"
+       include_bk_img "$LIXO_BK/$opt_lixo"
+    ;;
+    #   Exception for $OPTION
     *)
-        echo "Djabo burro"
+        printf '\e[31mDjabo burro\e[0m\n'
+        printf '\e[31mOps kkk...\e[0m\n'
+        printf '\e[31mOption not found\e[0m\n'
     ;;
 
-esac
+    esac
