@@ -57,8 +57,7 @@ set_kitty_image() {
 #=========== - = - = - = - = RESETAR O TEMA
 reset_full() {
   # reset PS1 padrão
-  
-
+  PS1='\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
   # reset cores
   printf '\033]12;#ffffff\007'   # cursor branco
   printf '\033]11;#000000\007'   # fundo preto
