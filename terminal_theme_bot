@@ -1,0 +1,96 @@
+#!/bin/bash
+
+#CARREGANDO AS FUNÇÕES E VARIÁVEIS NECESSÁRIAS
+BASE_DIR="$HOME/.terminalThemes"
+FUNCTIONS_FILE="$BASE_DIR/terminal_theme_functions"
+source "$FUNCTIONS_FILE"
+
+FZF_BASE="--height=40% --reverse --border"
+
+
+
+
+# VERIFICA SE O $LAST_THEME EXISTE
+touch "$LAST_THEME"
+
+
+opt_0_0="✞ Alterar prompt"
+opt_0_1="✞ Alterar background img"
+opt_0_2="✞ Reset all"
+opt_0_3="✞ Combo!!!"
+opt_0_4="✞ adicionar bk_img / prompt"
+    opt_0_4_0="✞ adicionar bk_img"
+    opt_0_4_1="✞ adicionar prompt"
+
+OPTION=$(printf "$opt_0_0
+$opt_0_1
+$opt_0_2
+$opt_0_3
+$opt_0_4" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
+
+case $OPTION in
+
+    # 1
+    "$opt_0_0")
+        ps1=$(ls "$PS1_DIR" | fzf \
+        --preview " [ -f "$PS1_DIR/{}" ] && cat "$PS1_DIR/{}" || [ -d "$PS1_DIR/{}" ] && ls "$PS1_DIR/{}" " \
+        $FZF_BASE \
+        --prompt="✞ PS1 OPTION ⤸ "
+        )
+        apply_ps1 $PS1_DIR/$ps1    
+    ;;
+    
+    # 2
+    "$opt_0_1")
+        bk_img=$(ls $BG_IMG_DIR | fzf $FZF_BASE --prompt="✞ BACKGROUND OPTION ⤸")
+        set_kitty_image "$BG_IMG_DIR/$bk_img"
+    ;;
+
+    # 3
+    "$opt_0_2")
+        reset_full
+        echo "PS1 & Backround resetados"
+    ;;
+
+    # 4
+    "$opt_0_3")
+        ps1=$(ls "$PS1_DIR" | fzf \
+          --preview " [ -f "$PS1_DIR/{}" ] && cat "$PS1_DIR/{}" || [ -d "$PS1_DIR/{}" ] && ls "$PS1_DIR/{}" " \
+          $FZF_BASE \
+          --prompt="✞ PS1 OPTION (MENU COMBO) ⤸ "
+        )
+        apply_ps1 $PS1_DIR/$ps1    
+
+        bk_img=$(ls $BG_IMG_DIR | fzf $FZF_BASE --prompt="✞ BACKGROUND OPTION (MENU COMBO) ⤸")
+        set_kitty_image "$BG_IMG_DIR/$bk_img"
+    ;;
+    # 5
+    "$opt_0_4")
+        bk_or_prompt=$( printf "$opt_0_4_0\n$opt_0_4_1" | fzf --reverse )
+
+        case "$bk_or_prompt" in 
+
+        # 5_0 - bk_img
+        "$opt_0_4_0")
+            bk_ch=$(fzf --reverse)
+            include_bk_img "$bk_ch"
+        ;;
+        
+        # 5_1 - prompt
+        "$opt_0_4_1")
+        ;;
+
+        # Exception
+        *)
+        ;;
+
+        esac
+
+
+    ;;
+
+    *)
+        echo "Djabo burro"
+    ;;
+
+esac

@@ -1,0 +1,104 @@
+#!/bin/bash
+BASE_DIR="$HOME/.terminalThemes"
+LAST_THEME="$BASE_DIR/.my_last_theme"
+PS1_DIR="$BASE_DIR/PS1s"
+BG_DIR="$BASE_DIR/backgrounds"
+BG_IMG_DIR="$BASE_DIR/backgrounds/imgs"
+KEY_LT_BACKGROUND_IMG="THEME_BACKGROUND_IMG"
+KEY_LT_PS1="THEME_PS1"
+
+
+# VERIFICA SE O $LAST_THEME EXISTE
+
+[ ! -e "$LAST_THEME" ] && touch "$LAST_THEME"
+
+#=========== - = - = - = - = ALTERAR COLUNA DO ".my_last_theme" = - = - = - = - ==========
+
+alter_colun() {
+    local key="$1"
+    local new_value="$2"
+    local file="$LAST_THEME"
+
+    if grep -q "^${key}=" "$file"; then
+        sed -i "s|^${key}=.*|${key}=${new_value}|" "$file"
+    else
+        echo "${key}=${new_value}\n" >> "$file"
+    fi
+}
+#=========== - = - = - = - = end
+
+#=========== - = - = - = - = ALTERAR O BACKGROUND-IMAGE
+
+set_kitty_image() {
+    if [ "$TERM" = "xterm-kitty" ]; then
+        local IMAGE_PATH="$1"
+        if [ "$IMAGE_PATH" = "none" ]; then
+          kitty @ set-background-image none 2>/dev/null
+          alter_colun "$KEY_LT_BACKGROUND_IMG" "none"
+  	else
+          kitten @ set-background-image "$IMAGE_PATH"
+          alter_colun "$KEY_LT_BACKGROUND_IMG" "$IMAGE_PATH"
+        fi
+    else
+      echo "Your terminal is $TERM, the function set_kitty_background only works in terminals kitty"
+    fi
+}
+#=========== - = - = - = - = END
+
+#=========== - = - = - = - = RESETAR O TEMA
+reset_full() {
+  # reset PS1 padrão
+  
+
+  # reset cores
+  printf '\033]12;#ffffff\007'   # cursor branco
+  printf '\033]11;#000000\007'   # fundo preto
+  printf '\033]10;#ffffff\007'   # texto branco
+
+  # remove imagem se o terminal for o kitty
+  if [ "$TERM" = 'xterm-kitty' ]; then
+  	kitty @ set-background-image none 2>/dev/null
+    alter_colun "$KEY_LT_BACKGROUND_IMG" "none" 
+  else
+	echo cara nem tem background KASKJSAKJSAKJASJKASKJASKJASJKSAJKAS
+  	return 0
+  fi
+  # seta o PS1 pro valor deafult
+  alter_colun "$KEY_LT_PS1" "deafult"
+}
+
+#=========== - = - = - = - = END
+
+#=========== - = - = - = - = PUXANDO O PS1 DO CAMINHO E ALTERANDO
+
+apply_ps1(){
+  local PS1_PATH="$1"
+  if [ $PS1_PATH = "deafult" ]; then
+    alter_colun "$KEY_LT_PS1" "$PS1_PATH"
+    PS1='\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
+  else
+    source "$PS1_PATH" && alter_colun "$KEY_LT_PS1" "$PS1_PATH" 
+  fi
+}
+
+include_bk_img(){
+  local bk_ch=$1
+  local mime=$(file --mime-type -b "$bk_ch")
+  if [[ "$mime" == image/* ]]; then
+      mv "$bk_ch" "$BG_IMG_DIR"
+      printf '\e[32mImage added\e[0m\n'
+  else
+      printf '\e[31mnot image\e[0m\n'
+  fi
+}
+
+remove_bk_img(){
+  local bk_ch=$1
+  local mime=$(file --mime-type -b "$bk_ch")
+  if [[ "$mime" == image/* ]]; then
+      mv "$bk_ch" "$BG_IMG_DIR"
+      printf '\e[31mImage deleted\e[0m\n'
+  else
+      printf '\e[32mnot image\e[0m\n'
+  fi
+}
