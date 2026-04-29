@@ -22,7 +22,7 @@ if ! command -v fzf >/dev/null 2>&1; then
         sudo apt update
         sudo apt install -y fzf 
         opt=$(printf 'sim\nnão' | fzf --reverse --prompt="Você deseja realizar a instalação do terminal \e[31mKitty\e[0m?")
-        case opt in 
+        case "$opt" in 
 
         *[sS]*)
         sudo apt install -y kitty
