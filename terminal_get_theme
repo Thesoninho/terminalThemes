@@ -1,0 +1,36 @@
+#!/bin/bash
+BASE_DIR="$HOME/.terminalThemes"
+FUNCTIONS_FILE="$BASE_DIR/terminal_theme_functions"
+source $FUNCTIONS_FILE
+
+LAST_THEME="$BASE_DIR/.my_last_theme"
+
+# VERIFICA SE O $LAST_THEME EXISTE
+[ ! -e "$LAST_THEME" ] && touch "$LAST_THEME"
+
+
+
+refresh_last_theme(){
+    local THEME_BACKGROUND_IMG=$(grep THEME_BACKGROUND_IMG $LAST_THEME)
+    local THEME_PS1=$(grep THEME_PS1 $LAST_THEME)
+    
+    THEME_PS1=${THEME_PS1/"\n"/""}                      
+    THEME_BACKGROUND_IMG=${THEME_BACKGROUND_IMG/"\n"/""}
+
+    THEME_PS1=$(echo "$THEME_PS1"                       | cut -d'=' -f2) 
+    THEME_BACKGROUND_IMG=$(echo $THEME_BACKGROUND_IMG   | cut -d'=' -f2) 
+    
+    #BOTANDO O PS1
+    if [ -f "$THEME_PS1" ]; then
+            apply_ps1 "$THEME_PS1"
+    fi
+    #BOTANDO O BK_IMG
+    if [ -f "$THEME_BACKGROUND_IMG" ]; then
+        if [ "$THEME_BACKGROUND_IMG" != "none" ]; then
+            set_kitty_image "$THEME_BACKGROUND_IMG"
+        fi
+    fi
+}
+
+refresh_last_theme
+

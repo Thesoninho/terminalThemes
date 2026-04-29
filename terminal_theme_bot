@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#CARREGANDO AS FUNÇÕES E VARIÁVEIS NECESSÁRIAS
+BASE_DIR="$HOME/.terminalThemes"
+FUNCTIONS_FILE="$BASE_DIR/terminal_theme_functions"
+source "$FUNCTIONS_FILE"
+
+
+# VERIFICA SE O $LAST_THEME EXISTE
+touch "$LAST_THEME"
+
+
+FZF_BASE="--height=40% --reverse --border"
+
+#  ============ MENU OPTIONS ============
+opt_0_0="✞ Alterar prompt"
+opt_0_1="✞ Alterar background img"
+opt_0_2="✞ Reset all"
+opt_0_3="✞ Combo!!!"
+opt_0_4="✞ adicionar / remover bk_img"
+    opt_0_4_0="✞ adicionar bk_img"
+    opt_0_4_1="✞ remover o bk_img"
+opt_0_5="✞ adicionar / remover bk_img (Do lixo)"
+
+#  ============ MENU OPTIONS ============
+OPTION=$(printf "$opt_0_0
+$opt_0_1
+$opt_0_2
+$opt_0_3
+$opt_0_4
+$opt_0_5" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
+
+# ============= MENU HIDDEN OPTIONS =====
+
+OPT_LIXO='^LIXO$|^OCULTOS$|^155$|^CÓDIGO PENAL DE FURTO KKK$|^RESGATE$'
+
+
+
+
+case $OPTION in
+
+    # 1
+    "$opt_0_0")
+        ps1=$(ls "$PS1_DIR" | fzf \
+        --preview " [ -f "$PS1_DIR/{}" ] && cat "$PS1_DIR/{}" || [ -d "$PS1_DIR/{}" ] && ls "$PS1_DIR/{}" " \
+        $FZF_BASE \
+        --prompt="✞ PS1 OPTION ⤸ "
+        )
+        apply_ps1 $PS1_DIR/$ps1    
+    ;;
+    # 2
+    "$opt_0_1")
+        bk_img=$(ls $BG_IMG_DIR | fzf $FZF_BASE --prompt="✞ BACKGROUND OPTION ⤸")
+        set_kitty_image "$BG_IMG_DIR/$bk_img"
+    ;;
+    # 3
+    "$opt_0_2")
+        reset_full
+        echo "PS1 & Backround resetados"
+    ;;
+    # 4
+    "$opt_0_3")
+        ps1=$(ls "$PS1_DIR" | fzf \
+          --preview " [ -f "$PS1_DIR/{}" ] && cat "$PS1_DIR/{}" || [ -d "$PS1_DIR/{}" ] && ls "$PS1_DIR/{}" " \
+          $FZF_BASE \
+          --prompt="✞ PS1 OPTION (MENU COMBO) ⤸ "
+        )
+        apply_ps1 $PS1_DIR/$ps1    
+
+        bk_img=$(ls $BG_IMG_DIR | fzf $FZF_BASE --prompt="✞ BACKGROUND OPTION (MENU COMBO) ⤸")
+        set_kitty_image "$BG_IMG_DIR/$bk_img"
+    ;;
+    # 5
+    "$opt_0_4")
+        bk_or_prompt=$( printf "$opt_0_4_0\n$opt_0_4_1" | fzf --reverse )
+
+        case "$bk_or_prompt" in 
+
+            # 5_0 - add bk_img
+
+            "$opt_0_4_0")
+                bk_ch=$(fzf --reverse)
+                include_bk_img "$bk_ch"
+
+            ;;
+
+            # 5_1 - remove bk_img
+
+            "$opt_0_4_1")
+                bk_ch=$( ls $BG_IMG_DIR | fzf --reverse )
+                remove_bk_img $bk_ch
+            ;;
+
+            # Exception for $bk_or_prompt
+
+            *)
+            printf '\e[31mOption not found\e[0m\n'
+
+            ;;
+
+        esac
+    ;;
+    # LIXO CONTROLE INTERNO
+    "$opt_0_5")
+       opt_lixo=$(ls "$LIXO_BK" | fzf $FZF_BASE --prompt="✞ GARBAGE COLLECTION ⤸")
+       echo "$LIXO_BK/$opt_lixo"
+       include_bk_img "$LIXO_BK/$opt_lixo"
+    ;;
+    #   Exception for $OPTION
+    *)
+        printf '\e[31mDjabo burro\e[0m\n'
+        printf '\e[31mOps kkk...\e[0m\n'
+        printf '\e[31mOption not found\e[0m\n'
+    ;;
+
+    esac
