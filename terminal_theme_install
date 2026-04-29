@@ -1,0 +1,116 @@
+#!/bin/bash
+
+set -e
+
+echo "✞ Instalando Terminal Themes..."
+
+INSTALL_DIR="$HOME/.terminalThemes"
+
+# ================================
+# ✞ Criar diretório ⤸
+# ================================
+echo "➤ Criando diretório em $INSTALL_DIR"
+mkdir -p "$INSTALL_DIR"
+
+# =======================================
+# ✞ Instalar dependência (fzf \ kitty) ⤸
+# =======================================
+if ! command -v fzf >/dev/null 2>&1; then
+    echo "➤ Instalando fzf..."
+
+    if command -v apt >/dev/null 2>&1; then
+        sudo apt update
+        sudo apt install -y fzf 
+        opt=$(printf 'sim\nnão' | fzf --reverse --prompt="Você deseja realizar a instalação do terminal \e[31mKitty\e[0m?")
+        case opt in 
+
+        *[sS]*)
+        sudo apt install -y kitty
+        kitty_conf_path="$HOME/.config/kitty/kitty.conf"
+        if [ -f "$kitty_conf_path" ]; then
+            echo "\e[31mKitty configuration file already exists at $kitty_conf_path\e[0m\n"
+        else
+            printf "\e[31mCreating Kitty configuration file at $kitty_conf_path\e[0m\n"
+            mkdir -p "$(dirname "$kitty_conf_path")"
+            touch "$kitty_conf_path"
+        fi
+
+        if grep -q "^background_image_layout scaled$" "$kitty_conf_path"; then
+            return 0
+        else
+            echo "background_image_layout scaled" >> "$kitty_conf_path"
+        fi
+        ;;
+
+        *[nN]*)
+            printf '\e[31mOk\e[32m!!\e[0m\n'
+        ;;
+
+        esac
+    else
+        echo "✖ Gerenciador de pacotes não suportado. Instale o fzf manualmente."
+        exit 1
+    fi
+else
+    echo "✔ fzf já instalado"
+fi
+
+
+# ================================
+# ✞ Copiar arquivos ⤸
+# ================================
+echo "➤ Copiando arquivos..."
+cp -r backgrounds "$INSTALL_DIR/"
+cp -r PS1s "$INSTALL_DIR/"
+cp terminal_get_theme "$INSTALL_DIR/"
+cp terminal_theme_bot "$INSTALL_DIR/"
+cp terminal_theme_functions "$INSTALL_DIR/"
+
+# ================================
+# ✞ Permissões ⤸
+# ================================
+echo "➤ Ajustando permissões..."
+chmod +x "$INSTALL_DIR/terminal_theme_bot"
+chmod +x "$INSTALL_DIR/terminal_get_theme"
+
+# ================================
+# ✞ Configurando .bashrc ⤸
+# ================================
+BASHRC="$HOME/.bashrc"
+
+if ! grep -q "^# ✞ CONFIGURATION TO ENABLE TERMINALTHEMES IN YOUR TERMINAL obs: (do not delete)$" "$BASHRC"; then
+    printf "\033[38;5;57m➤ Configurando .bashrc...\033[0m\n"
+
+    cat <<EOF >> "$BASHRC"
+
+# =========================================================
+# ✞ CONFIGURATION TO ENABLE TERMINALTHEMES IN YOUR TERMINAL obs: (do not delete)
+# =========================================================
+
+if [ -f "\$HOME/.terminalThemes/.my_last_theme" ]; then
+    source "\$HOME/.terminalThemes/terminal_get_theme"
+fi
+theme(){
+    source "\$HOME/.terminalThemes/terminal_theme_bot"
+}
+
+EOF
+source "$HOME/.bashrc"
+else
+    printf "\033[38;5;213m✔ .bashrc já configurado\033[0m\n"
+fi
+
+
+
+# ================================
+# ✞ Finalização ⤸
+# ================================
+echo ""
+echo "✔ Instalação concluída!"
+echo "➤ Reinicie o terminal ou rode:"
+echo "   source ~/.bashrc"
+echo ""
+echo "➤ Depois use o comando:"
+echo "   theme"
+echo ""
+
