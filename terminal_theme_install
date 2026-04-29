@@ -38,7 +38,7 @@ if ! command -v fzf >/dev/null 2>&1; then
         if grep -q "^background_image_layout scaled$" "$kitty_conf_path"; then
             return 0
         else
-            echo "background_image_layout scaled" >> "$kitty_conf_path"
+            echo "background_image_layout scaled\nallow_remote_control yes" >> "$kitty_conf_path"
         fi
         ;;
 
