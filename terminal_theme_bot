@@ -20,15 +20,14 @@ opt_0_3="✞ Combo!!!"
 opt_0_4="✞ adicionar / remover bk_img"
     opt_0_4_0="✞ adicionar bk_img"
     opt_0_4_1="✞ remover o bk_img"
-opt_0_5="✞ adicionar / remover bk_img (Do lixo)"
+    opt_0_4_2="✞ puxar o bk_img (Do lixo)"
 
 #  ============ MENU OPTIONS ============
 OPTION=$(printf "$opt_0_0
 $opt_0_1
 $opt_0_2
 $opt_0_3
-$opt_0_4
-$opt_0_5" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
+$opt_0_4" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
 
 # ============= MENU HIDDEN OPTIONS =====
 
@@ -72,7 +71,7 @@ case $OPTION in
     ;;
     # 5
     "$opt_0_4")
-        bk_or_prompt=$( printf "$opt_0_4_0\n$opt_0_4_1" | fzf --reverse )
+        bk_or_prompt=$( printf "$opt_0_4_0\n$opt_0_4_1\n$opt_0_4_2" | fzf --reverse )
 
         case "$bk_or_prompt" in 
 
@@ -91,6 +90,12 @@ case $OPTION in
                 remove_bk_img $bk_ch
             ;;
 
+            # 5_1 - puxa o bk_img do lixo
+
+            "$opt_0_4_2")
+               restore_img_from_trash "✞ GARBAGE COLLECTION ⤸" - 11 # o sinal e a quantidade de carácteres retirados do final do arquivo final
+            ;;
+
             # Exception for $bk_or_prompt
 
             *)
@@ -101,15 +106,9 @@ case $OPTION in
         esac
     ;;
     # LIXO CONTROLE INTERNO
-    "$opt_0_5")
-       opt_lixo=$(ls "$LIXO_BK" | fzf $FZF_BASE --prompt="✞ GARBAGE COLLECTION ⤸")
-       echo "$LIXO_BK/$opt_lixo"
-       include_bk_img "$LIXO_BK/$opt_lixo"
-    ;;
     #   Exception for $OPTION
     *)
         printf '\e[31mDjabo burro\e[0m\n'
-        printf '\e[31mOps kkk...\e[0m\n'
         printf '\e[31mOption not found\e[0m\n'
     ;;
 

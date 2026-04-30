@@ -11,8 +11,9 @@ BG_IMG_DIR="$BASE_DIR/backgrounds/imgs"
 KEY_LT_BACKGROUND_IMG="THEME_BACKGROUND_IMG"
 KEY_LT_PS1="THEME_PS1"
 
-LIXO="$BASE_DIR/.temp/"
+LIXO="$BASE_DIR/.temp"
 LIXO_BK="$LIXO/bk_remove"
+
 
 mkdir -p "$LIXO"
 mkdir -p "$LIXO_BK"
@@ -120,6 +121,24 @@ remove_bk_img(){
       printf '\e[31mImage deleted\e[0m\n'
   else
       printf '\e[32mnot image\e[0m\n'
+  fi
+}
+
+restore_img_from_trash(){
+  local prompt=$1 # O que vai ser 
+  local signal=$2 # Se vai tirar de frente ou de trás 
+  local quant=$3 # quantidade de caracteres retirados de frente e de trás
+  local bk_ch=$(ls "$LIXO_BK" | fzf $FZF_BASE --prompt="$prompt")
+  # echo "bk_ch: $bk_ch"
+  # echo "prompt: $prompt"
+  # echo "signal: $signal"
+  # echo "quant: $quant"
+  local mime=$(file --mime-type -b "$LIXO_BK/$bk_ch")
+  
+  if [[ "$mime" == image/* ]]; then
+      mv "$LIXO_BK/$bk_ch" "$BG_IMG_DIR/$(basename ${bk_ch::$signal$quant})" && printf '\e[32mImage recovered\e[0m\n'
+  else
+      printf '\e[31mnot image\e[0m\n'
   fi
 }
 
