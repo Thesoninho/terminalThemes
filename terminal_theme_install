@@ -45,6 +45,10 @@ if ! command -v fzf >/dev/null 2>&1; then
             não|nao|n|N)
                 printf '\e[31mOk\e[32m!!\e[0m\n'
             ;;
+	    
+    	    *)
+		printf '\e[31mFudeu rapá kkk, vai configurar essa prr manualmente\e[0m\n'
+	    ;;
 
         esac
     else
