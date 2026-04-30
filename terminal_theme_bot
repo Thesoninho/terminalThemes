@@ -22,14 +22,17 @@ opt_0_4="✞ adicionar / remover bk_img"
     opt_0_4_1="✞ remover o bk_img"
     opt_0_4_2="✞ puxar o bk_img (Do lixo)"
 
+# ============= MENU HIDDEN / STRANGER OPTIONS =============
+EXIT_OPTION="✞ SAIR"
 #  ============ MENU OPTIONS ====================
+while true; do
 OPTION=$(printf "$opt_0_0
 $opt_0_1
 $opt_0_2
 $opt_0_3
-$opt_0_4" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
+$opt_0_4
+$EXIT_OPTION" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
 
-# ============= MENU HIDDEN OPTIONS =============
 
 case $OPTION in
 
@@ -40,17 +43,19 @@ case $OPTION in
         $FZF_BASE \
         --prompt="✞ PS1 OPTION ⤸ "
         )
-        apply_ps1 $PS1_DIR/$ps1    
+        apply_ps1 $PS1_DIR/$ps1
+        echo -e "\033[0;32mPS1 SELECIONADO: $ps1\033[0m"
     ;;
     # 2
     "$opt_0_1")
         bk_img=$(ls $BG_IMG_DIR | fzf $FZF_BASE --prompt="✞ BACKGROUND OPTION ⤸")
         set_kitty_image "$BG_IMG_DIR/$bk_img"
+        echo -e "\033[0;32mBACKGROUND SELECIONADO: $bk_img\033[0m"
     ;;
     # 3
     "$opt_0_2")
         reset_full
-        echo "PS1 & Backround resetados"
+        echo -e '\033[0;32mPS1 & Backround resetados\033[0m'
     ;;
     # 4
     "$opt_0_3")
@@ -60,9 +65,12 @@ case $OPTION in
           --prompt="✞ PS1 OPTION (MENU COMBO) ⤸ "
         )
         apply_ps1 $PS1_DIR/$ps1    
+        echo -e "\033[0;32mPS1 SELECIONADO: $ps1\033[0m"
 
         bk_img=$(ls $BG_IMG_DIR | fzf $FZF_BASE --prompt="✞ BACKGROUND OPTION (MENU COMBO) ⤸")
         set_kitty_image "$BG_IMG_DIR/$bk_img"
+        echo -e "\033[0;32mBACKGROUND SELECIONADO: $bk_img\033[0m"
+        
     ;;
     # 5
     "$opt_0_4")
@@ -79,7 +87,7 @@ case $OPTION in
             # 5_1 - remove bk_img
             "$opt_0_4_1")
                 bk_ch=$( ls $BG_IMG_DIR | fzf --reverse )
-                remove_bk_img $bk_ch
+                remove_bk_img "$bk_ch"
             ;;
             # 5_1 - puxa o bk_img do lixo
             "$opt_0_4_2")
@@ -93,8 +101,12 @@ case $OPTION in
         esac
     ;;
     #   Exception for $OPTION
+    "$EXIT_OPTION")
+        printf '\e[31mSaindo do programa\e[0m\n'
+        break
+    ;;
     *)
-        printf '\e[31mDjabo burro\e[0m\n'
         printf '\e[31mOption not found\e[0m\n'
     ;;
     esac
+done
