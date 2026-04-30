@@ -94,7 +94,7 @@ include_bk_img(){
   local bk_ch=$1
   local mime=$(file --mime-type -b "$bk_ch")
   if [[ "$mime" == image/* ]]; then
-      mv "$bk_ch" "$BG_IMG_DIR"
+      cp "$bk_ch" "$BG_IMG_DIR"
       printf '\e[32mImage added\e[0m\n'
   else
       printf '\e[31mnot image\e[0m\n'
@@ -105,10 +105,10 @@ include_prompt(){
   local prompt_ch=$1
   local mime=$(file --mime-type -b "$bk_ch")
   if [[ "$mime" == text/* ]]; then
-      mv "$prompt_ch" "$BG_IMG_DIR"
-      printf '\e[32mImage added\e[0m\n'
+      cp "$prompt_ch" "$PS1_DIR"
+      printf '\e[32mPS1 added\e[0m\n'
   else
-      printf '\e[31mnot image\e[0m\n'
+      printf '\e[31mnot text\e[0m\n'
   fi
 }
 
