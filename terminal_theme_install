@@ -21,9 +21,18 @@ if ! command -v fzf >/dev/null 2>&1; then
     if command -v apt >/dev/null 2>&1; then
         sudo apt update
         sudo apt install -y fzf 
+    else
+        echo "✖ Gerenciador de pacotes não suportado. Instale o fzf manualmente."
+        exit 1
+    fi
+else
+    echo "✔ fzf já instalado"
+fi
+
+if command -v apt >/dev/null 2>&1; then
+    if ! command -v kitty >/dev/null 2>&1; then
         opt=$(printf 'sim\nnão' | fzf --reverse --prompt="Você deseja realizar a instalação do terminal Kitty?" --border)
         case "$opt" in 
-
             sim|s|S|y|Y)
                 sudo apt install -y kitty
                 kitty_conf_path="$HOME/.config/kitty/kitty.conf"
@@ -34,29 +43,21 @@ if ! command -v fzf >/dev/null 2>&1; then
                     mkdir -p "$(dirname "$kitty_conf_path")"
                     touch "$kitty_conf_path"
                 fi
-
-                grep -qx "background_image_layout scaled" "$kitty_conf_path" || \
+                    grep -qx "background_image_layout scaled" "$kitty_conf_path" || \
                     printf "background_image_layout scaled\n" >> "$kitty_conf_path"
-
-                grep -qx "allow_remote_control yes" "$kitty_conf_path" || \
+                    grep -qx "allow_remote_control yes" "$kitty_conf_path" || \
                     printf "allow_remote_control yes\n" >> "$kitty_conf_path"
             ;;
-
             não|nao|n|N)
                 printf '\e[31mOk\e[32m!!\e[0m\n'
+            ;;	
+            *)
+                printf '\e[31mFudeu rapá kkk, vai configurar essa prr manualmente\e[0m\n'
             ;;
-	    
-    	    *)
-		printf '\e[31mFudeu rapá kkk, vai configurar essa prr manualmente\e[0m\n'
-	    ;;
-
         esac
     else
-        echo "✖ Gerenciador de pacotes não suportado. Instale o fzf manualmente."
-        exit 1
+        printf "\033[38;5;213m✔ kitty já instalado\033[0m\n"
     fi
-else
-    echo "✔ fzf já instalado"
 fi
 
 
@@ -64,11 +65,11 @@ fi
 # ✞ Copiar arquivos ⤸
 # ================================
 echo "➤ Copiando arquivos..."
-cp -r backgrounds "$INSTALL_DIR/"
-cp -r PS1s "$INSTALL_DIR/"
-cp terminal_get_theme "$INSTALL_DIR/"
-cp terminal_theme_bot "$INSTALL_DIR/"
-cp terminal_theme_functions "$INSTALL_DIR/"
+cp -rn backgrounds "$INSTALL_DIR/"
+cp -rn PS1s "$INSTALL_DIR/"
+cp -n terminal_get_theme "$INSTALL_DIR/"
+cp -n terminal_theme_bot "$INSTALL_DIR/"
+cp -n terminal_theme_functions "$INSTALL_DIR/"
 
 # ================================
 # ✞ Permissões ⤸

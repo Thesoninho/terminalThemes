@@ -12,7 +12,7 @@ touch "$LAST_THEME"
 
 FZF_BASE="--height=40% --reverse --border"
 
-#  ============ MENU OPTIONS ============
+#  ============ MENU OPTIONS ====================
 opt_0_0="✞ Alterar prompt"
 opt_0_1="✞ Alterar background img"
 opt_0_2="✞ Reset all"
@@ -22,19 +22,14 @@ opt_0_4="✞ adicionar / remover bk_img"
     opt_0_4_1="✞ remover o bk_img"
     opt_0_4_2="✞ puxar o bk_img (Do lixo)"
 
-#  ============ MENU OPTIONS ============
+#  ============ MENU OPTIONS ====================
 OPTION=$(printf "$opt_0_0
 $opt_0_1
 $opt_0_2
 $opt_0_3
 $opt_0_4" | fzf $FZF_BASE --prompt="✞ OPTION ➤ ")
 
-# ============= MENU HIDDEN OPTIONS =====
-
-OPT_LIXO='^LIXO$|^OCULTOS$|^155$|^CÓDIGO PENAL DE FURTO KKK$|^RESGATE$'
-
-
-
+# ============= MENU HIDDEN OPTIONS =============
 
 case $OPTION in
 
@@ -76,40 +71,30 @@ case $OPTION in
         case "$bk_or_prompt" in 
 
             # 5_0 - add bk_img
-
             "$opt_0_4_0")
                 bk_ch=$(fzf --reverse)
                 include_bk_img "$bk_ch"
 
             ;;
-
             # 5_1 - remove bk_img
-
             "$opt_0_4_1")
                 bk_ch=$( ls $BG_IMG_DIR | fzf --reverse )
                 remove_bk_img $bk_ch
             ;;
-
             # 5_1 - puxa o bk_img do lixo
-
             "$opt_0_4_2")
                restore_img_from_trash "✞ GARBAGE COLLECTION ⤸" - 11 # o sinal e a quantidade de carácteres retirados do final do arquivo final
             ;;
-
             # Exception for $bk_or_prompt
-
             *)
-            printf '\e[31mOption not found\e[0m\n'
-
+                printf '\e[31mOption not found\e[0m\n'
             ;;
 
         esac
     ;;
-    # LIXO CONTROLE INTERNO
     #   Exception for $OPTION
     *)
         printf '\e[31mDjabo burro\e[0m\n'
         printf '\e[31mOption not found\e[0m\n'
     ;;
-
     esac
